@@ -48,7 +48,8 @@ class SWM_Inputs {
         CruiseControls cruise_controls = CRUISE_NONE;
         SignalStalkControls signal_stalk_controls = STALK_NONE;
         uint8_t rotary_switch_position = 0;
-        bool rotary_switch_initialized;
+        // We need to keep track of this since it might not be zeroed at boot
+        bool rotary_switch_initialized = false;
 };
 
 #endif

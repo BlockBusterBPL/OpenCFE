@@ -33,7 +33,12 @@ void CANbus::rx_periodic() {
     }
 }
 
-void CANbus::addListener(can_rx_listener listener) {
+// void CANbus::addListener(void (* listener)(uint32_t id, uint8_t d[8])) {
+//     rx_listeners[listener_count] = listener;
+//     listener_count++;
+// }
+
+void CANbus::addListener(Listener listener) {
     rx_listeners[listener_count] = listener;
     listener_count++;
 }

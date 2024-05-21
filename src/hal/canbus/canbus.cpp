@@ -1,5 +1,9 @@
 #include "hal/canbus/canbus.h"
 
+#include <Arduino.h>
+
+CAN_device_t CAN_cfg;
+
 CANbus::CANbus() {
     CAN_cfg.speed = CAN_SPEED_250KBPS; // has to be double on ESPs with 40mhz clocks
     CAN_cfg.tx_pin_id = GPIO_NUM_5;
@@ -27,18 +31,19 @@ void CANbus::tx(uint32_t id, uint8_t data[8]) {
 
 void CANbus::rx_periodic() {
     if (xQueueReceive(CAN_cfg.rx_queue, &rx_frame, 3 * portTICK_PERIOD_MS) == pdTRUE) {
-        for (int i = 0; i < listener_count; i++) {
-            rx_listeners[i](rx_frame.MsgID, rx_frame.data.u8);
+        // for (int i = 0; i < listener_count; i++) {
+        //     rx_listeners[i](rx_frame.MsgID, rx_frame.data.u8);
+        // }
+        for (auto& listener : rx_listeners) {
+            printf("CAN message recieved! %08X\n", rx_frame.MsgID);
+            listener->handleUpdate(rx_frame.MsgID, rx_frame.data.u8);
         }
+        last_can_rx = millis();
     }
 }
 
-// void CANbus::addListener(void (* listener)(uint32_t id, uint8_t d[8])) {
-//     rx_listeners[listener_count] = listener;
-//     listener_count++;
-// }
-
-void CANbus::addListener(Listener listener) {
-    rx_listeners[listener_count] = listener;
-    listener_count++;
+void CANbus::addListener(CAN_listener *listener) {
+    // rx_listeners[listener_count] = listener;
+    // listener_count++;
+    rx_listeners.push_back(listener);
 }

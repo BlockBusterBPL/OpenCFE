@@ -1,12 +1,13 @@
 #include "hal/swm_inputs/swm_inputs.h"
 
+#include <Arduino.h>
+
 SWM_Inputs::SWM_Inputs() {
-    canbus.addListener(
-        [this](uint32_t id, uint8_t d[8]) { this->handleUpdate(id, d); }
-    );
+    canbus.addListener(this);
 }
 
 void SWM_Inputs::handleUpdate(uint32_t id, uint8_t d[8]) {
+    Serial.print("Hmmbs");
     switch (id)
     {
     case SWM_MESSAGE_1: {

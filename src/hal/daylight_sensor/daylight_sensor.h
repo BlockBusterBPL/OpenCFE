@@ -4,10 +4,11 @@
 #define __DAYLIGHT_SENSOR_H
 
 #include "hal/canbus/canbus.h"
+#include "hal/canbus/can_listener.h"
 
 #define DAYLIGHT_MESSAGE 0x02802262;
 
-class DaylightSensor {
+class DaylightSensor : public CAN_listener {
     public:
         static DaylightSensor& getInstance() {
             static DaylightSensor instance;
@@ -16,11 +17,10 @@ class DaylightSensor {
         virtual int getDaylight() {
             return daylight;
         }
+        void handleUpdate(uint32_t id, uint8_t data[8]);
     private:
         DaylightSensor();
-        void handleUpdate(uint32_t id, uint8_t data[8]);
         CANbus canbus = CANbus::getInstance();
-
         int daylight = 0xF; // default to full brightness
 };
 

@@ -78,8 +78,9 @@ void loop() {
         } else if (nextSection.startsWith("print")) {
             String textToPrint = nextSection.substring(nextSection.indexOf(' ')+1, nextSection.indexOf('\n'));
             char copy[31];
+            std::fill_n(copy, 31, 0x20);
             textToPrint.toCharArray(copy, 31);
-            printf("lcd print %s\n", copy);
+            printf("lcd print `%s`\n", copy);
             lcd.print(copy, 31);
         }
     }

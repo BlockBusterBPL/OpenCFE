@@ -27,7 +27,7 @@ void CAN_logger::setFocused(bool shouldFocus) {
 void CAN_logger::handleUpdate(uint32_t id, uint8_t data[8]) {
     if (enabled && id == filter) {
         if (focused) {
-            printf("RX %08X (Byte %1d) ", id, focusByte);
+            printf("RX %08X (Byte %1u) ", id, focusByte);
             for (int i = 0; i < 8; i++) {
                 printf("%1d", (data[focusByte] >> i) && 1);
             }

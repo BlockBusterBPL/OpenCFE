@@ -11,8 +11,13 @@
 
 #include "hal/canbus/can_listener.h"
 
+struct CANPacket {
+    uint32_t id;
+    uint8_t data[8] = {0};
+};
 class CANbus {
     public:
+        
         static CANbus& getInstance() {
             static CANbus instance;
             return instance;

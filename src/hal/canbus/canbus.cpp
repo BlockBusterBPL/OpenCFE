@@ -31,10 +31,7 @@ void CANbus::tx(uint32_t id, uint8_t data[8]) {
 
 void CANbus::rx_periodic() {
     if (xQueueReceive(CAN_cfg.rx_queue, &rx_frame, 3 * portTICK_PERIOD_MS) == pdTRUE) {
-        // for (int i = 0; i < listener_count; i++) {
-        //     rx_listeners[i](rx_frame.MsgID, rx_frame.data.u8);
-        // }
-        for (auto& listener : rx_listeners) {
+        for (CAN_listener *listener : rx_listeners) {
             printf("CAN message recieved! %08X\n", rx_frame.MsgID);
             listener->handleUpdate(rx_frame.MsgID, rx_frame.data.u8);
         }
@@ -43,7 +40,5 @@ void CANbus::rx_periodic() {
 }
 
 void CANbus::addListener(CAN_listener *listener) {
-    // rx_listeners[listener_count] = listener;
-    // listener_count++;
     rx_listeners.push_back(listener);
 }

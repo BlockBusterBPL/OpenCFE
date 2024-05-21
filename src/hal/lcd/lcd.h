@@ -31,7 +31,7 @@ class LCD : public ModuleBase {
         QueueHandle_t lcd_data_queue;
         const int lcd_data_queue_length = 20;
         unsigned long next_message_time = 0;
-        uint8_t next_lcd_message[8];
-        void addToQueue(uint8_t data[8]);
+        CANPacket next_lcd_message;
+        void addToQueue(uint32_t id, uint8_t data[8]);
 };
 #endif

@@ -1,4 +1,4 @@
-#include "hal/swm_inputs/swm_inputs.h"
+#include "hal/listeners/swm_inputs/swm_inputs.h"
 
 SWM_Inputs::SWM_Inputs() {
     canbus.addListener(this);

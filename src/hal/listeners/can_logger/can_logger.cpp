@@ -1,4 +1,4 @@
-#include "modules/can_logger/can_logger.h"
+#include "hal/listeners/can_logger/can_logger.h"
 
 CAN_logger::CAN_logger() {
     canbus.addListener(this);

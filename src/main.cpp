@@ -1,16 +1,15 @@
 #include <Arduino.h>
 
 #include "hal/canbus/canbus.h"
-#include "hal/swm_inputs/swm_inputs.h"
-#include "hal/daylight_sensor/daylight_sensor.h"
+#include "hal/listeners/swm_inputs/swm_inputs.h"
+#include "hal/listeners/daylight_sensor/daylight_sensor.h"
 
 #include "modules/ModuleBase.h"
 #include "hal/lcd/lcd.h"
 
-#include "modules/can_logger/can_logger.h"
+#include "hal/listeners/can_logger/can_logger.h"
 
-ModuleBase *modules[128];
-int module_count = 0;
+std::vector<ModuleBase *> modules;
 
 CANbus canbus = CANbus::getInstance();
 SWM_Inputs swm_inputs = SWM_Inputs::getInstance();
@@ -61,8 +60,11 @@ void loop() {
             can_logger.setFocused(false);
             Serial.println("can-log focus DISABLED");
         } else if (nextSection.startsWith("set-focus-byte")) {
-            can_logger.setFocusByte(7);
-            printf("can-log focus byte index set to %d", 7);
+            int indexOfByteChar = nextSection.indexOf(' ')+1;
+            String filterByteString = nextSection.substring(indexOfByteChar, indexOfByteChar+1);
+            int filterByte = std::stoul(filterByteString.c_str(), nullptr, 16);
+            can_logger.setFocusByte(filterByte);
+            printf("can-log focus byte index set to %d", filterByte);
         }
     } else if (command.startsWith("lcd")) {
         String nextSection = command.substring(command.indexOf(' ')+1, command.indexOf('\n'));
@@ -87,13 +89,12 @@ void loop() {
 
     canbus.rx_periodic();
 
-    for (int mod = 0; mod < module_count; mod++) {
-        modules[mod]->periodicLoop();
+    for (ModuleBase *module : modules) {
+        module->periodicLoop();
     }
 }
 
 // put function definitions here:
 void addModule(ModuleBase *module) {
-  modules[module_count] = module;
-  module_count++;
+    modules.push_back(module);
 }

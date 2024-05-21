@@ -1,4 +1,4 @@
-#include "hal/daylight_sensor/daylight_sensor.h"
+#include "hal/listeners/daylight_sensor/daylight_sensor.h"
 
 DaylightSensor::DaylightSensor() {
     canbus.addListener(this);

@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+#include "libraries/linked_list/LinkedList.h"
+
 #include "hal/canbus/canbus.h"
 #include "hal/listeners/swm_inputs/swm_inputs.h"
 #include "hal/listeners/daylight_sensor/daylight_sensor.h"
@@ -9,7 +11,7 @@
 
 #include "hal/listeners/can_logger/can_logger.h"
 
-std::vector<ModuleBase *> modules;
+LinkedList<ModuleBase *> modules = LinkedList<ModuleBase *>();
 
 CANbus canbus = CANbus::getInstance();
 SWM_Inputs swm_inputs = SWM_Inputs::getInstance();
@@ -89,12 +91,12 @@ void loop() {
 
     canbus.rx_periodic();
 
-    for (ModuleBase *module : modules) {
-        module->periodicLoop();
+    for (int i = 0; i < modules.size(); i++) {
+        modules.get(i)->periodicLoop();
     }
 }
 
 // put function definitions here:
 void addModule(ModuleBase *module) {
-    modules.push_back(module);
+    modules.add(module);
 }

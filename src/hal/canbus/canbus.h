@@ -10,27 +10,28 @@
 
 #include "libraries/linked_list/LinkedList.h"
 
-#include "hal/canbus/can_listener.h"
-
 struct CANPacket {
     uint32_t id;
     uint8_t data[8] = {0};
 };
 class CANbus {
     public:
-        
+        class Listener {
+            public:
+                virtual void handleUpdate(uint32_t id, uint8_t d[8]);
+        };
+
         static CANbus& getInstance() {
             static CANbus instance;
             return instance;
         };
         CANbus();
         void tx(uint32_t id, uint8_t data[8]);
-        void tx_raw(CAN_frame_t *frame);
         void rx_periodic();
-        void addListener(CAN_listener *listener);
+        void addListener(CANbus::Listener *listener);
 
     private:
-        LinkedList<CAN_listener *> rx_listeners;
+        LinkedList<CANbus::Listener *> rx_listeners;
         const int rx_queue_size = 50; // Queue up to 50 message in the RX buffer
         uint32_t last_can_rx = 0;
 

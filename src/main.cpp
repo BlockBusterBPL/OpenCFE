@@ -9,6 +9,8 @@
 #include "modules/ModuleBase.h"
 #include "hal/lcd/lcd.h"
 
+#include "hal/d2/d2_packager.h"
+
 #include "hal/listeners/can_logger/can_logger.h"
 
 LinkedList<ModuleBase *> modules = LinkedList<ModuleBase *>();

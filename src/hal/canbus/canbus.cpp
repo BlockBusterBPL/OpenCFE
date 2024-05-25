@@ -5,7 +5,7 @@
 CAN_device_t CAN_cfg;
 
 CANbus::CANbus() {
-    rx_listeners = LinkedList<CAN_listener *>();
+    rx_listeners = LinkedList<CANbus::Listener *>();
 
     CAN_cfg.speed = CAN_SPEED_250KBPS; // has to be double on ESPs with 40mhz clocks
     CAN_cfg.tx_pin_id = GPIO_NUM_5;
@@ -31,10 +31,6 @@ void CANbus::tx(uint32_t id, uint8_t data[8]) {
     ESP32Can.CANWriteFrame(&tx_frame);
 }
 
-void CANbus::tx_raw(CAN_frame_t *frame) {
-    ESP32Can.CANWriteFrame(frame);
-}
-
 void CANbus::rx_periodic() {
     if (xQueueReceive(CAN_cfg.rx_queue, &rx_frame, 3 * portTICK_PERIOD_MS) == pdTRUE) {
         for (int i = 0; i < rx_listeners.size(); i++) {
@@ -45,6 +41,6 @@ void CANbus::rx_periodic() {
     }
 }
 
-void CANbus::addListener(CAN_listener *listener) {
+void CANbus::addListener(CANbus::Listener *listener) {
     rx_listeners.add(listener);
 }

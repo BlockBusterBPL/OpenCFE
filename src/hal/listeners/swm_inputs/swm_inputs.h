@@ -4,12 +4,11 @@
 #define SWM_INPUTS_H
 
 #include "hal/canbus/canbus.h"
-#include "hal/canbus/can_listener.h"
 
 #define SWM_MESSAGE_1 0x00404066
 #define SWM_MESSAGE_2 0x0221300A
 
-class SWM_Inputs : public CAN_listener {
+class SWM_Inputs : private CANbus::Listener {
     public:
         enum RTIControls {RTI_NONE, RTI_UP, RTI_DOWN, RTI_LEFT, RTI_RIGHT, RTI_BACK, RTI_ENTER};
         enum MediaControls {MEDIA_NONE, MEDIA_VOL_UP, MEDIA_VOL_DOWN, MEDIA_NEXT, MEDIA_PREV};
@@ -38,11 +37,11 @@ class SWM_Inputs : public CAN_listener {
         virtual uint8_t getRotaryPosition() {
             return rotary_switch_position;
         }
-        void handleUpdate(uint32_t id, uint8_t data[8]);
 
     private:
         SWM_Inputs();
         CANbus canbus = CANbus::getInstance();
+        void handleUpdate(uint32_t id, uint8_t data[8]);
 
         RTIControls rti_controls = RTI_NONE;
         MediaControls media_controls = MEDIA_NONE;

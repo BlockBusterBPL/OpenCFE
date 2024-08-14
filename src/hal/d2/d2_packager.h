@@ -4,6 +4,7 @@
 #define __D2_PACKAGER_H
 
 #include <unordered_map>
+#include <vector>
 
 #include <Arduino.h>
 
@@ -16,8 +17,11 @@ class D2_Packager : private CANbus::Listener {
     public:
         // a container for storing parts of a recieved D2 message
         struct RxStage {
-            enum class Status {Empty, Filling, Full} status;
+            enum class Status {Empty, Filling, Full} status = Status::Empty;
+            enum class MessageType {Invalid, SingleFrame, MultiFrame} type = MessageType::SingleFrame;
             uint8_t frameData[8][8] = {0};
+            int nextFrameToCopy = 0;
+            int totalMessageLength = 0;
         };
 
         // a container for staging a D2 message to be sent
@@ -44,10 +48,14 @@ class D2_Packager : private CANbus::Listener {
     private:
         CANbus canbus = CANbus::getInstance();
 
-        std::unordered_map<long, RxStage> rx_message_map = std::unordered_map<long, RxStage>();
+        RxStage empty_rx_stage;
+
+        std::unordered_map<uint32_t, RxStage> rx_message_map = std::unordered_map<uint32_t, RxStage>();
         void handleUpdate(uint32_t id, uint8_t data[8]);
 
-        LinkedList<D2_Packager::Listener*> listeners = LinkedList<D2_Packager::Listener*>();
+        std::vector<uint32_t> responseIDs = std::vector<uint32_t>();
+
+        std::vector<D2_Packager::Listener*> listeners = std::vector<D2_Packager::Listener*>();
         
         TxStage empty_tx_stage;
         TxStage tx_stage;
@@ -57,6 +65,8 @@ class D2_Packager : private CANbus::Listener {
 
         // Transmit all required frames from the tx stage
         void internal_transmit_frames(unsigned long eid, TxStage *stage);
+
+        void internal_read_response(uint32_t eid, uint8_t data[8]);
 };
 
 #endif
